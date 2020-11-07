@@ -1,24 +1,20 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Routes from './routes/index.js';
+import UsersProvider from './context/Users'
+import UserProvider from './context/User'
+import TokenProvider from './context/Token'
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <UsersProvider>
+        <UserProvider>
+          <TokenProvider>
+            <Routes />
+          </TokenProvider>
+        </UserProvider>
+      </UsersProvider>
     </div>
   );
 }

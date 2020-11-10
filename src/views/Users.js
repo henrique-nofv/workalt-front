@@ -1,15 +1,14 @@
 import React, { Fragment, useEffect } from 'react';
-import { Table, Space } from 'antd';
+import { Table, Tag, PageHeader } from 'antd';
 import axios from 'axios'
 import { useUsers } from "../context/Users";
-import { useParams } from 'react-router-dom';
 import { useToken } from "../context/Token";
+
 const columns = [
     {
         title: 'Cpf',
         dataIndex: 'cpf',
         key: 'cpf',
-        render: text => <a onClick={()=>{window.location.assign(`/user/${text}`)}}>{text}</a>,
     },
     {
         title: 'Cref',
@@ -17,28 +16,35 @@ const columns = [
         key: 'cref',
     },
     {
-        title: 'Ações',
-        key: 'action',
-        render: (text, record) => (
-            <Space size="middle">
-                <a style={{ color: 'green' }}>Aceitar {record.name}</a>
-                <a style={{ color: 'red' }}>Negar</a>
-            </Space>
-        ),
+        title: 'Status',
+        dataIndex: 'status',
+        key: 'status',
+        render: (text, record) =>
+            <Tag color={`${record.status == 'BLOCKEAD' ? 'red' : record.status == 'PENDING' ? 'grey' : 'blue'}`}>
+                {record.status ? record.status : ''}
+            </Tag>
+    },
+    {
+        title: 'Assinatura',
+        dataIndex: 'assinatura',
+        key: 'assinatura',
+    },
+    {
+        title: 'Detalhes',
+        key: 'Detalhes',
+        render: (text, record) => <a onClick={() => { window.location.assign(`/user/${record.cpf}`) }}>Visualizar</a>,
     },
 ];
 
 
 function Users() {
-    let { id } = useParams();
-
     const { users, setUsers } = useUsers();
     const { token } = useToken();
 
     const config = {
         headers: { Authorization: `Bearer ${token}` }
     };
-    
+
     useEffect(() => {
         axios.get(`${process.env.REACT_APP_URL}/personals`, config).then(response => {
             let data = [];
@@ -47,7 +53,9 @@ function Users() {
                 data.push({
                     cpf: personal.cpf,
                     cref: personal.cref,
-                    key: index
+                    key: index,
+                    status: personal.user.status,
+                    assinatura: personal.signatureStatus
                 })
             })
             setUsers(data)
@@ -59,9 +67,13 @@ function Users() {
 
     return (
         <Fragment>
-            <h1>ID: {id}</h1>
-            <Table dataSource={users}
-                title={() => 'Usuários - Personal'}
+            <PageHeader
+                className="site-page-header"
+                title="Personais"
+            />
+            <Table
+                loading={!users[0]}
+                dataSource={users}
                 columns={columns} />
         </Fragment>
     );

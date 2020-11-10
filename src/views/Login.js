@@ -1,37 +1,29 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Form, Input, Button, Card } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import axios from 'axios';
 import { useToken } from "../context/Token";
 
 const NormalLoginForm = () => {
-  const { token, setToken } = useToken();
-
-  const saveAuth = (value)=>{
-    setToken(value)
-  }
-
-  const onFinish = values => {    
-    const body = {
-      email: values.email,
-      password: values.password
+  const { signIn } = useToken();
+  const [logged, setLogged] = useState(true);
+  
+  const onFinish = async values => {
+    try{
+      await signIn(values.email, values.password)
     }
-
-    axios.post(`${process.env.REACT_APP_URL}/auth/login`, body).then(response =>{
-      if (response.status == 200) {
-        saveAuth(
-          response.data.token
-        )
-
-        console.log('Token', token)
-      }
-    })
+    catch{
+      setLogged(false)
+      setTimeout(()=>{
+        setLogged(true)
+      }, 3500)
+    }
   };
 
 
   return (
-    <Card title="Login" style={{ width: 300, margin: 'auto' }}>
+    <Card title="Login" style={{ width: 650, margin: 'auto', height: '100vh' }}>
       <Form
+      style={{width: 350, margin: 'auto'}}
         name="normal_login"
         className="login-form"
         initialValues={{ remember: true }}
@@ -55,6 +47,11 @@ const NormalLoginForm = () => {
         </Form.Item>
 
         <Form.Item>
+          {
+            !logged ?
+              <p style={{color: 'red'}}>Confira seu login e senha informado!</p>
+            : ''
+          }
           <Button type="primary" htmlType="submit" className="login-form-button">
             Log in
           </Button>

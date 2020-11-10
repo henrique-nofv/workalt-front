@@ -8,13 +8,13 @@ import TokenProvider from './context/Token'
 function App() {
   return (
     <div className="App">
+    <TokenProvider>
       <UsersProvider>
         <UserProvider>
-          <TokenProvider>
             <Routes />
-          </TokenProvider>
         </UserProvider>
       </UsersProvider>
+    </TokenProvider>
     </div>
   );
 }

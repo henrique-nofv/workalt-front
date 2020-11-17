@@ -24,7 +24,7 @@ export default function UserProvider({ children }) {
 
         axios.get(`${process.env.REACT_APP_URL}/personals/${id}`, config).then(async response => {
             const crefStatus = await isValidCref(response.data.cref)
-
+            console.log('Valor do cref', response.data.cref)
             response.data.status = crefStatus
 
             setUser(response.data)
@@ -49,7 +49,7 @@ export default function UserProvider({ children }) {
                         crefStatus = 'Não encontrado situação de CREF'
                         resolve(crefStatus);
                     }
-                })
+                }).catch(e => resolve(''))
         })
 
     })
